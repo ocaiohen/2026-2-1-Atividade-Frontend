@@ -9,12 +9,12 @@
 - **Professor**: [L A Minora](https://github.com/leonardo-minora/)
 - **Aluno**: Caio Henrique Cruz da Silva
 - **Data de entrega**: por causa da festividade do aniversário de Amanda, dia 29/06/2026
-## Checklist (passo a passo da tarefa)
-- [ ] 1. Fork desse repositório
-- [ ] 2. Colocar o nome nesse arquivo `README.md`, substituindo FIXME por seu nome na linha 10
-- [ ] 3. Criar um projeto next configurando para biome, typescript, tailwindcss
-- [ ] 4. Adicionar a lib [shadcnui](https://ui.shadcn.com/)
-- [ ] 5. Commit com mensagem "criado e configurado app inicial"
+## Checklist (passo a passo da tarefa)npx create-next-app@latest pos-av1
+- [x] 1. Fork desse repositóri
+- [x] 2. Colocar o nome nesse arquivo `README.md`, substituindo FIXME por seu nome na linha 10
+- [x] 3. Criar um projeto next configurando para biome, typescript, tailwindcss
+- [x] 4. Adicionar a lib [shadcnui](https://ui.shadcn.com/)
+- [x] 5. Commit com mensagem "criado e configurado app inicial"
 - [ ] 6. Modificar a tela inicial com as seguintes informações
   - [ ] Nome do aluno (`/src/app/page.tsx`)
   - [ ] Modificar o título e o ícone da aplicação (`/src/app/layout.tsx`)
