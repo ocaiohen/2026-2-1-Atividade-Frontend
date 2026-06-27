@@ -7,10 +7,12 @@ import { QuoteForm } from "@/components/quote-form";
 import { QuoteList } from "@/components/quote-list";
 import {
   getAuthors,
+  getDeletedApiQuoteIds,
   getLocalQuotes,
   getUser,
   removeUser,
   saveAuthors,
+  saveDeletedApiQuoteIds,
   saveLocalQuotes,
 } from "@/lib/storage";
 import { getQuotes } from "@/lib/quotes";
@@ -23,6 +25,7 @@ export default function DashboardPage() {
   const [apiQuotes, setApiQuotes] = useState<Quote[]>([]);
   const [localQuotes, setLocalQuotes] = useState<Quote[]>([]);
   const [authors, setAuthors] = useState<string[]>([]);
+  const [deletedApiQuoteIds, setDeletedApiQuoteIds] = useState<number[]>([]);
   const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -36,9 +39,11 @@ export default function DashboardPage() {
 
     const savedQuotes = getLocalQuotes();
     const savedAuthors = getAuthors();
+    const savedDeletedApiQuoteIds = getDeletedApiQuoteIds();
 
     setLocalQuotes(savedQuotes);
     setAuthors(savedAuthors);
+    setDeletedApiQuoteIds(savedDeletedApiQuoteIds);
 
     async function loadQuotes() {
       try {
@@ -56,10 +61,13 @@ export default function DashboardPage() {
 
   const allQuotes = useMemo(() => {
     const localIds = new Set(localQuotes.map((quote) => quote.id));
-    const filteredApiQuotes = apiQuotes.filter((quote) => !localIds.has(quote.id));
+    const deletedApiIds = new Set(deletedApiQuoteIds);
+    const filteredApiQuotes = apiQuotes.filter(
+      (quote) => !localIds.has(quote.id) && !deletedApiIds.has(quote.id),
+    );
 
     return [...localQuotes, ...filteredApiQuotes];
-  }, [apiQuotes, localQuotes]);
+  }, [apiQuotes, deletedApiQuoteIds, localQuotes]);
 
   function updateAuthors(author: string) {
     const normalized = author.trim();
@@ -120,9 +128,20 @@ export default function DashboardPage() {
     }
 
   function handleDeleteQuote(id: number) {
-    const updatedQuotes = localQuotes.filter((quote) => quote.id !== id);
-    setLocalQuotes(updatedQuotes);
-    saveLocalQuotes(updatedQuotes);
+    const existsInLocalQuotes = localQuotes.some((quote) => quote.id === id);
+    const existsInApiQuotes = apiQuotes.some((quote) => quote.id === id);
+
+    if (existsInLocalQuotes) {
+      const updatedQuotes = localQuotes.filter((quote) => quote.id !== id);
+      setLocalQuotes(updatedQuotes);
+      saveLocalQuotes(updatedQuotes);
+    }
+
+    if (existsInApiQuotes && !deletedApiQuoteIds.includes(id)) {
+      const updatedDeletedApiQuoteIds = [id, ...deletedApiQuoteIds];
+      setDeletedApiQuoteIds(updatedDeletedApiQuoteIds);
+      saveDeletedApiQuoteIds(updatedDeletedApiQuoteIds);
+    }
 
     if (selectedQuote?.id === id) {
       setSelectedQuote(null);
